@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bootleg Volume Adjustment Software</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-logo-frame">
+          <img src="logo.webp" alt="Bootleg Volume Adjustment Software logo" class="brand-logo" onerror="this.style.display='none'">
+        </span>
+        <div>
+          <h1>Bootleg Volume Adjustment Software</h1>
+          <p class="subtitle">A utility for audio volume calibration and side-by-side reference comparison.</p>
+        </div>
+      </div>
+      <div class="progress-chip" id="progressChip">&mdash; / &mdash;</div>
+    </header>
+
+    <main class="grid">
+      <section class="panel current-panel">
+        <div class="panel-head">
+          <h2 id="currentFilename">Loading&hellip;</h2>
+          <span class="badge" id="appliedBadge" hidden>already applied</span>
+        </div>
+
+        <canvas id="waveform"></canvas>
+
+        <div class="dbfs-row">
+          <div class="dbfs-box">
+            <span class="dbfs-label">Original</span>
+            <span class="dbfs-value" id="originalDbfs">&mdash;</span>
+          </div>
+          <div class="dbfs-arrow">&rarr;</div>
+          <div class="dbfs-box highlight">
+            <span class="dbfs-label">Adjusted</span>
+            <span class="dbfs-value" id="adjustedDbfs">&mdash;</span>
+          </div>
+        </div>
+
+        <div class="slider-block">
+          <label class="slider-block-label">Volume adjustment &mdash; drag or nudge (applies immediately)</label>
+          <div class="slider-row">
+            <div id="nudgeMinus1Mount" class="nudge-mount"></div>
+            <div id="nudgeMinus01Mount" class="nudge-mount"></div>
+            <div id="gainSliderMount" class="slider-mount"></div>
+            <div id="nudgePlus01Mount" class="nudge-mount"></div>
+            <div id="nudgePlus1Mount" class="nudge-mount"></div>
+          </div>
+
+          <label class="slider-block-label">Type an amount to adjust the current level by &mdash; applies on click, then clears</label>
+          <div class="db-input-row">
+            <div id="gainNumberMount" class="number-mount"></div>
+            <div id="btnSetDbMount"></div>
+          </div>
+
+          <div class="render-status" id="renderStatus"></div>
+        </div>
+
+        <div class="transport">
+          <div id="btnPrevMount" class="transport-item"></div>
+          <div id="btnPlayCurrentMount" class="transport-item"></div>
+          <div id="btnPlayMount" class="transport-item grow"></div>
+          <div id="btnSkipMount" class="transport-item"></div>
+          <div id="btnApplyMount" class="transport-item grow"></div>
+        </div>
+      </section>
+
+      <aside class="panel reference-panel">
+        <h2>Reference sounds</h2>
+        <p class="hint">Loaded from <code>ref_vol_sounds/</code> at launch &mdash; played before the current sound, with a
+          <span id="delayMsLabel">&mdash;</span> ms gap after every sound.</p>
+        <ul id="referenceList" class="reference-list"></ul>
+      </aside>
+    </main>
+  </div>
+
+  <footer class="app-footer">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <span class="footer-logo-frame">
+          <img src="logo.webp" alt="Bootleg Volume Adjustment Software logo" class="footer-logo" onerror="this.style.display='none'">
+        </span>
+        <div>
+          <h2>Bootleg Volume Adjustment Software</h2>
+          <p>A utility for audio volume calibration and side-by-side reference comparison.</p>
+        </div>
+      </div>
+
+      <div class="footer-block">
+        <span class="footer-heading">App log</span>
+        <div class="log-line" id="logLine">Ready.</div>
+        <div id="btnRebuildMount"></div>
+      </div>
+
+      <div class="footer-block">
+        <span class="footer-heading">Project</span>
+        <a class="footer-link" href="https://github.com/Northstrix/Bootleg-Volume-Adjustment-Software" target="_blank" rel="noopener noreferrer">GitHub &#8599;</a>
+        <a class="footer-link" href="https://sourceforge.net/projects/bvas/" target="_blank" rel="noopener noreferrer">SourceForge &#8599;</a>
+      </div>
+
+      <div class="footer-badge-block" id="footerBadgeMount"></div>
+    </div>
+  </footer>
+
+<script src="custom-slider.js"></script>
+<script src="floating-label-input.js"></script>
+<script src="chronicle-button.js"></script>
+<script src="footer-badge.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

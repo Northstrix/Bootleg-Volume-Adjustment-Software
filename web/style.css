@@ -1,0 +1,558 @@
+:root {
+  --bg: #030304;
+  --panel: #0b0b0d;
+  --panel-border: #1c1c20;
+  --accent-blue: #1177ED;
+  --accent-purple: #8711ED;
+  --success: #11ED19;
+  --error: #ED1911;
+  --marginal: #11E5ED;
+  --text: #F5F6FA;
+  --text-dim: #9A9AA6;
+  --radius: 14px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+.app {
+  height: 100vh;
+  max-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 28px 16px;
+  gap: 14px;
+  overflow: hidden; /* the whole app stays within one viewport -- the
+                        footer is never pushed below the fold */
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-shrink: 0;
+}
+
+.brand { display: flex; align-items: center; gap: 14px; }
+
+.brand-logo-frame {
+  width: 40px; height: 40px; border-radius: 10px; overflow: hidden;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.brand-logo { width: 100%; height: 100%; object-fit: contain; display: block; }
+
+.topbar h1 { margin: 0; font-size: 22px; letter-spacing: 0.2px; }
+.subtitle { margin: 2px 0 0; color: var(--text-dim); font-size: 13px; }
+
+.progress-chip {
+  font-family: 'Consolas', 'SFMono-Regular', monospace;
+  font-size: 15px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--panel-border);
+  background: var(--panel);
+  color: var(--accent-blue);
+  white-space: nowrap;
+}
+
+.grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(260px, 1fr);
+  gap: 16px;
+  min-height: 0; /* lets children shrink + scroll instead of overflowing */
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius);
+  padding: 20px;
+  min-height: 0;
+  overflow-y: auto; /* panel content scrolls internally if it doesn't fit,
+                        rather than growing the page past 100vh */
+}
+
+.current-panel { display: flex; flex-direction: column; gap: 16px; }
+
+.panel-head { display: flex; align-items: center; gap: 12px; }
+.panel-head h2 { margin: 0; font-size: 20px; font-weight: 600; word-break: break-all; }
+
+.badge {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;
+  color: #0a0a0a; background: var(--marginal);
+  padding: 4px 10px; border-radius: 999px; font-weight: 700;
+  white-space: nowrap;
+}
+
+#waveform {
+  width: 100%; height: 140px; display: block;
+  background: #050506;
+  border: 1px solid var(--panel-border);
+  border-radius: 10px;
+}
+
+.dbfs-row { display: flex; align-items: center; gap: 14px; }
+.dbfs-box {
+  flex: 1; background: #0f0f12; border: 1px solid var(--panel-border);
+  border-radius: 10px; padding: 10px 16px; display: flex; flex-direction: column; gap: 4px;
+}
+.dbfs-box.highlight { border-color: rgba(17,119,237,0.5); box-shadow: 0 0 16px rgba(17,119,237,0.15); }
+.dbfs-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-dim); }
+.dbfs-value { font-family: 'Consolas', monospace; font-size: 20px; }
+.dbfs-arrow { color: var(--text-dim); font-size: 18px; }
+
+.slider-block { display: flex; flex-direction: column; gap: 8px; }
+.slider-block-label { font-size: 12px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; }
+
+.db-input-row { display: flex; align-items: center; gap: 10px; }
+
+.slider-row { display: flex; align-items: center; gap: 10px; }
+.slider-mount { flex: 1; min-width: 0; }
+.number-mount { width: 150px; flex-shrink: 0; }
+
+.nudge-mount { flex-shrink: 0; }
+
+.render-status { font-size: 12px; color: var(--marginal); min-height: 14px; }
+
+.transport { display: flex; flex-wrap: wrap; gap: 10px; margin-top: auto; align-items: stretch; }
+.transport-item { flex: 0 0 auto; display: flex; }
+.transport-item.grow { flex: 1 1 220px; }
+
+.reference-panel h2 { margin-top: 0; font-size: 16px; }
+.hint { color: var(--text-dim); font-size: 12px; line-height: 1.5; }
+.hint code { color: var(--accent-blue); }
+
+.reference-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.reference-list li {
+  display: flex; justify-content: space-between; gap: 8px; align-items: center;
+  background: #0f0f12; border: 1px solid var(--panel-border);
+  border-radius: 10px; padding: 10px 12px; font-size: 13px;
+}
+.ref-name { word-break: break-all; }
+.ref-dbfs { font-family: 'Consolas', monospace; color: var(--accent-purple); white-space: nowrap; }
+
+@media (max-width: 900px) {
+  .grid { grid-template-columns: 1fr; }
+}
+
+/* ============================================================
+   Full-fledged footer -- sits BELOW the 100vh content area, so the
+   page scrolls to reveal it. Holds branding, the live app log, the
+   project links, and the Namer UI badge.
+   ============================================================ */
+
+.app-footer {
+  width: 100%;
+  background: var(--panel);
+  border-top: 1px solid var(--panel-border);
+  /* same horizontal padding as .app, so footer content lines up with the
+     content area above it */
+  padding: 36px 28px 32px;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1.4fr 1fr auto;
+  gap: 36px;
+  align-items: start;
+  width: 100%; /* fill the footer's full width, same as .grid does above */
+}
+
+.footer-brand { display: flex; align-items: flex-start; gap: 14px; }
+
+.footer-logo-frame {
+  width: 52px; height: 52px; border-radius: 12px; overflow: hidden;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+}
+.footer-logo { width: 100%; height: 100%; object-fit: contain; display: block; }
+
+.footer-brand h2 { margin: 0 0 6px; font-size: 17px; }
+.footer-brand p { margin: 0; color: var(--text-dim); font-size: 13px; line-height: 1.6; max-width: 42ch; }
+
+.footer-block { display: flex; flex-direction: column; gap: 10px; }
+
+.footer-heading {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.6px;
+  color: var(--text-dim); font-weight: 700;
+}
+
+.footer-link {
+  color: var(--text); text-decoration: none; font-size: 14px;
+  width: fit-content; transition: color 0.2s ease;
+}
+.footer-link:hover { color: var(--accent-blue); }
+
+.footer-badge-block { display: flex; align-items: flex-start; justify-content: flex-end; }
+
+@media (max-width: 1000px) {
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+  .footer-brand { grid-column: 1 / -1; }
+}
+
+@media (max-width: 620px) {
+  .footer-grid { grid-template-columns: 1fr; }
+  .footer-badge-block { justify-content: flex-start; }
+}
+
+/* ============================================================
+   Ported from CustomSlider.tsx -- see custom-slider.js
+   ============================================================ */
+
+.ns-slider-wrapper {
+  position: relative;
+  width: var(--ns-width, 100%);
+  height: var(--ns-thumb-height, 20px);
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  touch-action: none;
+  outline: none;
+  border-radius: var(--ns-fill-radius, 8px);
+}
+.ns-slider-wrapper.disabled { cursor: not-allowed; opacity: 0.5; }
+
+.ns-slider-track, .ns-slider-range {
+  position: absolute;
+  height: var(--ns-track-height, 8px);
+  border-radius: var(--ns-fill-radius, 8px);
+  top: 50%;
+  transform: translateY(-50%);
+  transition: background-color 0.3s ease;
+}
+.ns-slider-track { background-color: var(--ns-track-bg, #262626); width: 100%; }
+.ns-slider-range { width: 0%; }
+
+.ns-slider-thumb {
+  position: absolute;
+  width: var(--ns-thumb-width, 20px);
+  height: var(--ns-thumb-height, 20px);
+  border-radius: var(--ns-thumb-radius, 50%);
+  top: 50%;
+  transform: translateY(-50%);
+  left: 0%;
+  border-width: var(--ns-thumb-border-width, 2px);
+  border-style: solid;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: background-color 0.3s ease, border-color 0.3s ease, left 0.05s linear;
+}
+
+/* ============================================================
+   Ported from FloatingLabelInput.tsx -- see floating-label-input.js
+   ============================================================ */
+
+.mobile-form-group {
+  position: relative;
+  width: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-bottom: 22px;
+}
+.mobile-form-group:last-child { margin-bottom: 0; }
+
+.mobile-form-input {
+  width: 100%;
+  height: var(--input-height);
+  padding: var(--input-padding);
+  font-size: var(--input-font-size);
+  font-weight: 400;
+  font-family: inherit;
+  color: var(--foreground);
+  background: var(--mobile-form-input-bg);
+  border: var(--input-outline-width) solid var(--input-outline);
+  border-radius: var(--general-rounding);
+  outline: none;
+  box-sizing: border-box;
+  text-align: left;
+  transition: border-color 0.3s, color 0.3s, background 0.3s;
+  resize: none;
+  line-height: 1.4;
+}
+.mobile-form-input:focus { border-color: var(--input-outline-focus); }
+.mobile-form-input:disabled { opacity: 0.5; pointer-events: none; }
+.mobile-form-group.rtl .mobile-form-input { direction: rtl; text-align: right; }
+.mobile-form-group.textarea .mobile-form-input {
+  height: var(--floating-input-layout-text-area-height);
+  overflow-y: auto;
+}
+
+.mobile-form-label {
+  position: absolute;
+  left: 11px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted-foreground);
+  font-size: var(--label-font-size);
+  font-weight: 400;
+  pointer-events: none;
+  background: var(--parent-background);
+  padding: var(--label-padding);
+  transition: color 0.3s, background 0.3s, font-size 0.3s, top 0.3s, left 0.3s, right 0.3s, transform 0.3s;
+  z-index: 2;
+  max-width: calc(100% - 26px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mobile-form-group.rtl .mobile-form-label { right: 12px; left: auto; text-align: right; }
+
+.mobile-form-group:not(.active):not(.has-value) .mobile-form-label {
+  top: 50%; transform: translateY(-50%);
+  font-size: var(--label-font-size);
+  color: var(--muted-foreground);
+  background: var(--parent-background);
+  padding: var(--label-padding);
+}
+
+.mobile-form-group.active .mobile-form-label,
+.mobile-form-group .mobile-form-input:focus + .mobile-form-label {
+  top: 0; left: 12px; right: auto;
+  font-size: var(--label-active-font-size);
+  color: var(--accent-color);
+  background: var(--parent-background);
+  padding: var(--label-active-padding);
+  z-index: 2;
+}
+.mobile-form-group.rtl.active .mobile-form-label,
+.mobile-form-group.rtl .mobile-form-input:focus + .mobile-form-label {
+  right: 12px; left: auto;
+}
+
+.mobile-form-group.has-value:not(.active) .mobile-form-label {
+  top: 0; left: 12px; right: auto;
+  font-size: var(--label-active-font-size);
+  color: var(--muted-foreground);
+  background: var(--parent-background);
+  padding: var(--label-active-padding);
+  z-index: 2;
+}
+.mobile-form-group.rtl.has-value:not(.active) .mobile-form-label { right: 12px; left: auto; }
+
+.mobile-form-group.textarea .mobile-form-label { left: 12px; right: auto; padding: var(--label-padding); }
+.mobile-form-group.textarea.rtl .mobile-form-label { right: 12px; left: auto; }
+.mobile-form-group.textarea:not(.active):not(.has-value) .mobile-form-label {
+  top: 12px; left: 12px; right: auto; transform: none;
+  font-size: var(--label-font-size);
+  color: var(--muted-foreground);
+  background: var(--parent-background);
+  padding: var(--label-padding);
+  text-align: left;
+}
+.mobile-form-group.textarea:not(.active):not(.has-value).rtl .mobile-form-label {
+  right: 12px; left: auto; text-align: right;
+}
+
+/* ============================================================
+   Ported from FooterBadge.tsx -- see footer-badge.js
+   ============================================================ */
+
+.badge-card {
+  display: inline-flex;
+  flex-direction: column;
+  border-radius: 12px;
+  user-select: none;
+  background: #111;
+  border: 1px solid #242424;
+  padding: 12px 18px 16px 18px;
+  max-width: max-content;
+  text-align: left;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+  cursor: pointer;
+}
+.badge-card:hover { background: #141414; border-color: #303030; }
+
+.badge-subtext { font-size: 11px; margin-bottom: 6px; display: block; color: #A3A3A3; user-select: none; }
+
+.badge-row { display: inline-flex; align-items: center; gap: 10px; }
+
+.badge-img-frame {
+  width: 28px; height: 28px; min-width: 28px; min-height: 28px;
+  border-radius: 8px; overflow: hidden; display: inline-flex;
+  align-items: center; justify-content: center; flex-shrink: 0; box-sizing: border-box;
+  border: none;
+}
+.badge-img-frame.bordered { border: 1px solid #242424; }
+.badge-card:hover .badge-img-frame.bordered { border-color: #303030; }
+
+.badge-img { width: 100%; height: 100%; object-fit: contain; display: block; }
+
+.badge-name { font-weight: 700; font-size: 14px; color: #F5F5F5; user-select: none; white-space: nowrap; }
+
+/* 3D flip-on-hover text, ported verbatim from the component's style-jsx block */
+.flip-wrapper {
+  position: relative;
+  display: block;
+  perspective: 108px;
+}
+.flip-wrapper span { display: block; }
+.flip-wrapper span:nth-of-type(2) { position: absolute; top: 0; left: 0; }
+.flip-text {
+  font-style: normal;
+  display: inline-block;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  will-change: transform, opacity;
+  transition: transform 0.55s cubic-bezier(0.645, 0.045, 0.355, 1),
+    opacity 0.35s linear 0.2s;
+}
+.flip-wrapper span:nth-of-type(1) .flip-text {
+  transform-origin: top;
+  opacity: 1;
+  transform: rotateX(0deg);
+}
+.flip-wrapper span:nth-of-type(2) .flip-text {
+  opacity: 0;
+  transform: rotateX(-90deg) scaleX(0.9) translate3d(0, 10px, 0);
+  transform-origin: bottom;
+}
+.badge-card:hover .flip-wrapper span:nth-of-type(1) .flip-text {
+  opacity: 0;
+  transform: rotateX(90deg) scaleX(0.9) translate3d(0, -10px, 0);
+}
+.badge-card:hover .flip-wrapper span:nth-of-type(2) .flip-text {
+  opacity: 1;
+  transform: rotateX(0deg) scaleX(1) translateZ(0);
+  transition: transform 0.75s cubic-bezier(0.645, 0.045, 0.355, 1),
+    opacity 0.35s linear 0.3s;
+}
+
+/* ============================================================
+   Ported from ChronicleButton.tsx -- see chronicle-button.js.
+   Copied verbatim from the component's own <style jsx> block.
+   ============================================================ */
+
+.chronicleButton {
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; /* addition: centers text when an explicit
+                               height is set (e.g. the Adjust button) */
+  overflow: hidden;
+  line-height: 1;
+  padding: 1rem 1.232rem;
+  cursor: pointer;
+  border: none;
+  font-weight: 700;
+  background: #f0f0f1;
+  color: #1a1a24;
+  transition: background 0.3s ease-in-out, color 0.3s ease-in-out,
+    border 0.3s ease-in-out, padding 0.3s ease-in-out;
+  will-change: background, color, border, padding;
+  position: relative;
+}
+
+.chronicleButton span {
+  position: relative;
+  display: block;
+  perspective: 108px;
+}
+
+.chronicleButton .chronicle-fade {
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.chronicleButton .chronicle-fade-in {
+  opacity: 1;
+}
+
+.chronicleButton span:nth-of-type(2) {
+  position: absolute;
+}
+
+.chronicleButton em {
+  font-style: normal;
+  display: inline-block;
+  font-size: 1.025rem;
+  line-height: 1;
+  will-change: transform, opacity, color;
+  transition: color 0.3s ease-in-out,
+    transform 0.55s cubic-bezier(0.645, 0.045, 0.355, 1),
+    opacity 0.35s linear 0.2s;
+}
+
+.chronicleButton span:nth-of-type(1) em {
+  transform-origin: top;
+}
+
+.chronicleButton span:nth-of-type(2) em {
+  opacity: 0;
+  transform: rotateX(-90deg) scaleX(0.9) translate3d(0, 10px, 0);
+  transform-origin: bottom;
+}
+
+.chronicleButton:hover span:nth-of-type(1) em {
+  opacity: 0;
+  transform: rotateX(90deg) scaleX(0.9) translate3d(0, -10px, 0);
+}
+
+.chronicleButton:hover span:nth-of-type(2) em {
+  opacity: 1;
+  transform: rotateX(0deg) scaleX(1) translateZ(0);
+  transition: color 0.3s ease-in-out,
+    transform 0.75s cubic-bezier(0.645, 0.045, 0.355, 1),
+    opacity 0.35s linear 0.3s;
+}
+
+/* --- OUTLINED VARIANT --- */
+.chronicleButton.outlined {
+  background: transparent;
+  transition: border 0.3s ease-in-out, color 0.3s ease-in-out,
+    background-color 0.3s ease-in-out, padding 0.3s ease-in-out;
+  will-change: border, color, background, padding;
+  position: relative;
+  z-index: 0;
+}
+
+.chronicleButton.outlined em {
+  transition: color 0.3s ease-in-out;
+  position: relative;
+  z-index: 1;
+}
+
+.chronicleButton.outlined::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: transparent;
+  z-index: 0;
+  transition: background 0.3s ease-in-out;
+  pointer-events: none;
+}
+
+.chronicleButton.outlined.chronicle-hovered::before {
+  background: var(--chronicle-outlined-hover-bg, transparent);
+}
+
+/* Disable flip animation for outlined */
+.chronicleButton.outlined span,
+.chronicleButton.outlined span:nth-of-type(2),
+.chronicleButton.outlined span:nth-of-type(1) em,
+.chronicleButton.outlined span:nth-of-type(2) em {
+  transform: none !important;
+  opacity: 1 !important;
+  transition: color 0.3s ease-in-out;
+}
+
+/* Addition beyond the original component -- this app disables buttons
+   conditionally (e.g. no current file), which the source component has
+   no notion of. */
+.chronicleButton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
